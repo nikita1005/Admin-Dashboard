@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 //import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
@@ -56,48 +56,87 @@ export default function UserProfile() {
 
   const [subData, setSubrData] = useState([]);
   const [finalData, setFinalData] = useState([]);
-  function submitData(subData){
+  function submitData(subData) {
     setFinalData(subData);
-    setSubrData(subData={});
+    setSubrData((subData = {}));
     document.myForm.reset();
     console.log(finalData);
-}
+    // console.log(finalData.)
+  }
 
   // const handleExpandClick = () => {
   //   setExpanded(!expanded);
   // };
+  const uploadedImage = React.useRef(null);
+  const imageUploader = React.useRef(null);
+
+  const handleImageUpload = (e) => {
+    const [file] = e.target.files;
+    if (file) {
+      const reader = new FileReader();
+      const { current } = uploadedImage;
+      current.file = file;
+      reader.onload = (e) => {
+        current.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={6}>
         <div
           style={{
-            marginLeft: "10%",
+            marginLeft: "30%",
+            marginTop:"10%"
           }}
         >
-          <h2>Employee Details</h2>
+          <h2 style={{marginLeft:"70px"}}>Employee Details</h2>
           <Card className={classes.root}>
-            <CardHeader
-              avatar={
-                <Avatar
-                  src="https://images.unsplash.com/photo-1611095790691-ff1be3430b22?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80"
-                  aria-label="recipe"
-                  className={classes.large}
-                ></Avatar>
-              }
-              action={
-                <IconButton aria-label="settings">
-                  {/* <MoreVertIcon /> */}
-                </IconButton>
-              }
+           
+            {/* <CardMedia */}
+              {/* className={classes.media}
+              // image={finalData.image}
+              // image="https://images.unsplash.com/photo-1611095790691-ff1be3430b22?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80" */}
+              <img
+              ref={uploadedImage}
+              style={{
+                borderRadius: "50%",
+                width: "140px",
+                height: "150px",
+                border:"1px dashed black",
+                alignItems:"center",
+                justifyContent:"center",
+                marginLeft:"100px",
+                marginTop:"10px"
+                // style={{
+                      //   borderRadius: "50%",
+                      //   height: "140px",
+                      //   width: "150px",
+
+                      //   border: "1px dashed black",
+                      // }}
+              }}
+            // />
+            onClick={() => imageUploader.current.click()}
+            />
+             <CardHeader
+              // avatar={
+              //   <Avatar
+              //     src="https://images.unsplash.com/photo-1611095790691-ff1be3430b22?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80"
+              //     aria-label="recipe"
+              //     className={classes.large}
+              //   ></Avatar>
+              // }
+              // action={
+              //   <IconButton aria-label="settings">
+              //     {/* <MoreVertIcon /> */}
+              //   </IconButton>
+              // }
+              
               title={finalData.empName}
               subheader={finalData.emailId}
-            />
-            <CardMedia
-              className={classes.media}
-              image={finalData.image}
-              // image="https://images.unsplash.com/photo-1611095790691-ff1be3430b22?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80"
-              title="Paella dish"
             />
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">
@@ -114,11 +153,14 @@ export default function UserProfile() {
         </div>
       </Grid>
       <Grid item xs={6}>
-        <div>
-          <h2>Edit Employees Details</h2>
+        <div style={{
+            // marginLeft: "10%",
+            marginTop:"10%"
+          }}>
+          <h2 style={{marginLeft:"170px"}}>Edit Employees Details</h2>
           <form name="myForm">
             <TableContainer
-              style={{ display: "flex", justifyContent: "center" }}
+              style={{ display: "flex", justifyContent: "center",marginTop:"10px" }}
             >
               <Table
                 style={{ width: "50%", justifyContent: "center" }}
@@ -130,7 +172,7 @@ export default function UserProfile() {
                     <TextField
                       value={subData["empName"]}
                       onChange={(e) =>
-                        setSubrData({ ...subData, "empName": e.target.value })
+                        setSubrData({ ...subData, empName: e.target.value })
                       }
                       label="Empolyee Name"
                       margin="normal"
@@ -142,7 +184,10 @@ export default function UserProfile() {
                   {/* <TableCell> */}
                   <TableRow>
                     <TextField
-                    value={subData['emailId']} onChange={(e)=>setSubrData({...subData, "emailId" : e.target.value})}
+                      value={subData["emailId"]}
+                      onChange={(e) =>
+                        setSubrData({ ...subData, emailId: e.target.value })
+                      }
                       label="Email Id "
                       margin="normal"
                       variant="outlined"
@@ -150,11 +195,35 @@ export default function UserProfile() {
                     />
                   </TableRow>
                   <TableRow>
-                    <input type="file" value={subData['image']} onChange={(e)=>setSubrData({...subData, "image" : e.target.value})} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      ref={imageUploader}
+                      placeholder="selectFile"
+                      style={{
+                        display: "none",
+                      }}
+                    />
+                    {/* <Button
+                      // style={{
+                      //   borderRadius: "50%",
+                      //   height: "140px",
+                      //   width: "150px",
+
+                      //   border: "1px dashed black",
+                      // }}
+                      onClick={() => imageUploader.current.click()}
+                    > Upload Image</Button> */}
+                     
+                    
                   </TableRow>
                   <TableRow>
                     <TextField
-                    value={subData['desc']} onChange={(e)=>setSubrData({...subData, "desc" : e.target.value})}
+                      value={subData["desc"]}
+                      onChange={(e) =>
+                        setSubrData({ ...subData, desc: e.target.value })
+                      }
                       label="Description "
                       margin="normal"
                       variant="outlined"
@@ -163,7 +232,11 @@ export default function UserProfile() {
                   </TableRow>
                   {/* </TableCell> */}
                   {/* <TableCell> */}
-                  <Button variant="contained" color="primary" onClick={()=>submitData(subData)}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => submitData(subData)}
+                  >
                     Edit Details{" "}
                   </Button>
                   {/* </TableCell> */}
